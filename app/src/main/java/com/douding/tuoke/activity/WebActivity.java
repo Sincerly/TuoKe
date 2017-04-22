@@ -13,6 +13,7 @@ import com.douding.tuoke.web.JavaScriptInterface;
  */
 
 public class WebActivity  extends AppCompatActivity{
+
     private WebView webView;
 
     @Override

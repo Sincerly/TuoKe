@@ -5,10 +5,10 @@
     android:orientation="vertical">
 
     <include
-        android:id="@+id/web"
         layout="@layout/view_title_bar" />
 
     <WebView
+        android:id="@+id/web"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>
