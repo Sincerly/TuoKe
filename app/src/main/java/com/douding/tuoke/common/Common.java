@@ -5,5 +5,9 @@ package com.douding.tuoke.common;
  */
 
 public class Common {
-    public static String stepCode=HttpEnum.A.name();
+    //public static String stepCode=HttpEnum.A.name();
+	public static String DeivceId="";
+	public static String NickName="";//个人昵称
+	public static String Name="";//个人昵称Id
+
 }
