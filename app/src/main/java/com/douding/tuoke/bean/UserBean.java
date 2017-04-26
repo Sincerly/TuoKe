@@ -1,5 +1,6 @@
 package com.douding.tuoke.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -10,7 +11,7 @@ import java.util.List;
  * 应用类型：建材
  */
 
-public class UserBean {
+public class UserBean{
 
 	/**
 	 * Ret : 0

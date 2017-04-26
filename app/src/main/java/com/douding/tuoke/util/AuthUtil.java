@@ -34,8 +34,8 @@ import java.util.Map;
 
 public class AuthUtil {
 	public static final String APP_ID = "wx782c26e4c19acffb";
-	//    public static final String APP_ID="wx2fa0744e25727d1e";
-	public static final String redirect_uri = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage";
+//	    public static final String APP_ID="wx2fa0744e25727d1e";
+	public static final String redirect_uri = "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage";
 	private static CookieStore cookieStore;
 
 	public static String doGet(String url) throws IOException {
@@ -46,7 +46,7 @@ public class AuthUtil {
 		HttpEntity entity = response.getEntity();
 		if (entity != null) {
 			result = EntityUtils.toString(entity, "utf-8");
-			Log.e("tag", client.getCookieStore() + "");
+			//Log.e("tag", client.getCookieStore() + "");
 		}
 		return result;
 	}
@@ -55,16 +55,34 @@ public class AuthUtil {
 		String result = "";
 		DefaultHttpClient client = new DefaultHttpClient();
 		HttpGet httpGet = new HttpGet(url);
-		if (client != null) {
-			client.setCookieStore(cookieStore);
-		}
+		//设置cookie
+		client.setCookieStore(cookieStore);
 		HttpResponse response = client.execute(httpGet);
 		HttpEntity entity = response.getEntity();
 		if (entity != null) {
 			result = EntityUtils.toString(entity, "utf-8");
-			if (cookieStore == null) {
-				cookieStore = client.getCookieStore();
-			}
+			Log.e("tag", client.getCookieStore() + "");
+			Log.e("reponse Body:", result);
+		}
+		return result;
+	}
+
+	/**
+	 * 获取getPassTicket
+	 * @param url
+	 * @return
+	 * @throws IOException
+     */
+	public static String doGetByPassTicket(String url) throws IOException {
+		String result = "";
+		DefaultHttpClient client = new DefaultHttpClient();
+		HttpGet httpGet = new HttpGet(url);
+
+		HttpResponse response = client.execute(httpGet);
+		HttpEntity entity = response.getEntity();
+		if (entity != null) {
+			result = EntityUtils.toString(entity, "utf-8");
+			cookieStore = client.getCookieStore();
 			Log.e("tag", client.getCookieStore() + "");
 			Log.e("reponse Body:", result);
 		}
@@ -74,7 +92,7 @@ public class AuthUtil {
 	//Step1.获取uuid
 	public static String login() throws IOException {
 		long time = System.currentTimeMillis();
-		String url = "https://login.wx.qq.com/jslogin?appid=" + APP_ID + "&redirect_uri=" + redirect_uri + "&fun=new&lang=zh_CN&_=" + time;
+		String url = "https://login.wx2.qq.com/jslogin?appid=" + APP_ID + "&redirect_uri=" + redirect_uri + "&fun=new&lang=zh_CN&_=" + time;
 		Log.e("login url:", url);
 		return doGet(url);
 	}
@@ -82,7 +100,7 @@ public class AuthUtil {
 	//Step3.轮循获取二维码状态
 	public static String getScanState(String uid, String t) throws IOException {
 //        long time=System.currentTimeMillis();
-		String url = "https://login.wx.qq.com/cgi-bin/mmwebwx-bin/login?loginicon=true&uuid=" + uid + "&tip=1&r=1824897301&_=" + t;
+		String url = "https://login.wx2.qq.com/cgi-bin/mmwebwx-bin/login?loginicon=true&uuid=" + uid + "&tip=1&r=1824897301&_=" + t;
 		Log.e("scanState:", url);
 		return doGet(url);
 	}
@@ -90,16 +108,23 @@ public class AuthUtil {
 	//Step4.手机点击登录 调用接口
 	public static String getLoginState(String uid) throws IOException {
 		long time = System.currentTimeMillis();
-		String url = "https://login.wx.qq.com/cgi-bin/mmwebwx-bin/login?loginicon=true&uuid=" + uid + "&tip=0&r=1824872217&_=" + time;
+		String url = "https://login.wx2.qq.com/cgi-bin/mmwebwx-bin/login?loginicon=true&uuid=" + uid + "&tip=0&r=1824872217&_=" + time;
 		Log.e("updateState:", url);
 		return doGet(url);
 	}
 
 	//Step5.获取cookie信息以及skey、wxsid、wxuin、pass_ticket
 	public static String getPassTicket(String ticket, String uid, String scan) throws IOException {
-		String url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=" + ticket + "&uuid=" + uid + "&lang=zh_CN" + "&scan=" + scan + "&fun=new&version=v2&lang=zh_CN";
+		String url = "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=" + ticket + "&uuid=" + uid + "&lang=zh_CN" + "&scan=" + scan + "&fun=new&version=v2&lang=zh_CN";
 		Log.e("getPassTicket:", url);
-		return doGet2(url);
+		return doGetByPassTicket(url);
+	}
+
+	//Step5.获取cookie信息以及skey、wxsid、wxuin、pass_ticket
+	public static String getPassTicket2(String ticket, String uid, String scan) throws IOException {
+		String url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=" + ticket + "&uuid=" + uid + "&lang=zh_CN" + "&scan=" + scan + "&fun=old&version=v2&lang=zh_CN";
+		Log.e("getPassTicket:", url);
+		return doGetByPassTicket(url);
 	}
 
 	/**
@@ -107,7 +132,7 @@ public class AuthUtil {
 	 */
 	public static String getFriendsList(String passTicket, String skey) throws IOException {
 		long time = System.currentTimeMillis();
-		String url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact?lang=zh_CN&pass_ticket=" + passTicket + "&r=" + time + "&seq=0&skey=" + skey;
+		String url = "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact?lang=zh_CN&pass_ticket=" + passTicket + "&r=" + time + "&seq=0&skey=" + skey;
 		Log.e("getFrientds List:", url);
 		return doGet2(url);
 	}
@@ -128,7 +153,6 @@ public class AuthUtil {
                 "ClientMsgId":"14929139788750230"},
             "Scene":0
         }*/
-
 		RequestPayload rp = new RequestPayload();
 		RequestPayload.BaseRequestBean baseRequestBean = new RequestPayload.BaseRequestBean();
 		baseRequestBean.setDeviceID("e6666666666666");
@@ -142,8 +166,6 @@ public class AuthUtil {
 		RequestPayload.MsgBean msg = new RequestPayload.MsgBean();
 		msg.setContent(msgContent);
 		msg.setClientMsgId(String.valueOf(time+num));
-//        msg.setFromUserName(msgFrom);
-//        msg.setToUserName(msgTo);
 		msg.setFromUserName(Common.Name);//自己id
 		msg.setToUserName(msgTo);//发送给谁
 		msg.setLocalID(String.valueOf(time+num));
@@ -152,7 +174,7 @@ public class AuthUtil {
 		rp.setScene(0);
 
 		String result = "";
-		String url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsendmsg?lang=zh_CN&pass_ticket=" + passTicket;
+		String url = "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxsendmsg?lang=zh_CN&pass_ticket=" + passTicket;
 		Log.e("sendMessage HeaderJson:", new Gson().toJson(rp));
 		Log.e("sendMessage Url:", url);
 		result = doPost2(url,new Gson().toJson(rp));
@@ -176,12 +198,11 @@ public class AuthUtil {
 			post.setHeader("Content_Type","application/json;charset=UTF-8");
 
 			HttpResponse res = client.execute(post);
-			res.setHeader("content_type","application/json;charset=UTF-8");
 			System.out.println(res.getStatusLine().getStatusCode());
 			// 如果状态码为200，接收正常
 			if (res.getStatusLine().getStatusCode() == 200) {
 				// 取出回应字串
-				result=EntityUtils.toString(res.getEntity()).trim();
+				result=EntityUtils.toString(res.getEntity(), "utf-8");
 				Log.e("Post response Body:",result);
 			}
 		} catch (Exception e) {
@@ -199,7 +220,7 @@ public class AuthUtil {
 	 * @return
 	 */
 	public static String getUserInfo(String sid,String skey,String uin,String passTicket){
-		String url="https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=862039733&lang=zh_CN&pass_ticket="+passTicket;
+		String url="https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=862039733&lang=zh_CN&pass_ticket="+passTicket;
 		RequestUserInfo info=new RequestUserInfo();
 		RequestUserInfo.BaseRequestBean rb=new RequestUserInfo.BaseRequestBean();
 		rb.setDeviceID("e6666666666666666666");

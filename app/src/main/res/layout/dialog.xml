@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			  android:orientation="vertical"
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent">
+
+	<RadioGroup
+		android:id="@+id/group"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+		<RadioButton
+			android:text="全部" 	android:paddingLeft="16dp"
+			android:textSize="18sp"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:checked="true"
+			android:id="@+id/radioButton"
+			android:layout_weight="1"/>
+
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="1px"
+			android:background="#60000000"/>
+		<RadioButton
+			android:text="男" 	android:paddingLeft="16dp"
+			android:textSize="18sp"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/radioButton2"
+			android:layout_weight="1"/>
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="1px"
+			android:background="#60000000"/>
+		<RadioButton
+			android:text="女"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/radioButton3" 	android:paddingLeft="16dp"
+			android:textSize="18sp"
+			android:layout_weight="1"/>
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="1px"
+			android:background="#60000000"/>
+		<RadioButton
+			android:text="群组"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/radioButton4" 	android:paddingLeft="16dp"
+			android:textSize="18sp"
+			android:layout_weight="1"/>
+		<View
+			android:layout_width="match_parent"
+			android:layout_height="1px"
+			android:background="#60000000"/>
+		<RadioButton
+			android:text="男女"
+			android:paddingLeft="16dp"
+			android:textSize="18sp"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/radioButton5"
+			android:layout_weight="1"/>
+	</RadioGroup>
+</LinearLayout>

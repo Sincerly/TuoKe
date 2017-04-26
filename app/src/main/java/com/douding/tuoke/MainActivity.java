@@ -71,17 +71,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	}
 
 	private void fillListView() {
-		listView.setAdapter(new BaseAdapter<UserBean.MemberListBean>(userBean.getMemberList(), MainActivity.this, R.layout.item_user) {
-			@Override
-			protected void fillItem(ViewHolder holder, UserBean.MemberListBean data, int position) {
-//				holder.setText(data.getNickName(),R.id.nick);
-				View view = holder.getConvertView();
-				TextView v = (TextView) view.findViewById(R.id.nick);
-				v.setText("呵呵");
-//				Glide.with(MainActivity.this).load("https://wx.qq.com" + data.getHeadImgUrl()).into(
-//						(ImageView) holder.getView(R.id.imageView));
-			}
-		});
+//		listView.setAdapter(new BaseAdapter<UserBean.MemberListBean>(userBean.getMemberList(), MainActivity.this, R.layout.item_user) {
+//			@Override
+//			protected void fillItem(ViewHolder holder, UserBean.MemberListBean data, int position) {
+////				holder.setText(data.getNickName(),R.id.nick);
+//				View view = holder.getConvertView();
+//				TextView v = (TextView) view.findViewById(R.id.nick);
+//				v.setText("呵呵");
+////				Glide.with(MainActivity.this).load("https://wx.qq.com" + data.getHeadImgUrl()).into(
+////						(ImageView) holder.getView(R.id.imageView));
+//			}
+//		});
+
 		//listView.setOnItemClickListener(new ListViewItemClick());
 	}
 

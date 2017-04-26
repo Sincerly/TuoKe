@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="biaoqing">
+        <item>微笑</item>
+        <item>撇嘴</item>
+        <item>色</item>
+        <item>发呆</item>
+        <item>得意</item>
+        <item>流泪</item>
+        <item>害羞</item>
+        <item>闭嘴</item>
+        <item>睡</item>
+        <item>大哭</item>
+        <item>尴尬</item>
+        <item>发怒</item>
+        <item>调皮</item>
+        <item>呲牙</item>
+        <item>惊讶</item>
+        <item>难过</item>
+        <item>酷</item>
+        <item>冷汗</item>
+        <item>抓狂</item>
+        <item>吐</item>
+        <item>偷笑</item>
+        <item>愉快</item>
+        <item>白眼</item>
+        <item>傲慢</item>
+        <item>饥饿</item>
+        <item>困</item>
+        <item>惊恐</item>
+        <item>流汗</item>
+        <item>憨笑</item>
+        <item>悠闲</item>
+        <item>奋斗</item>
+        <item>咒骂</item>
+        <item>疑问</item>
+        <item>嘘</item>
+        <item>晕</item>
+        <item>疯了</item>
+        <item>衰</item>
+        <item>可怜</item>
+        <item>拥抱</item>
+        <item>再见</item>
+        <item>擦汗</item>
+        <item>抠鼻</item>
+        <item>鼓掌</item>
+        <item>糗大了</item>
+        <item>坏笑</item>
+        <item>左哼哼</item>
+        <item>右哼哼</item>
+        <item>哈欠</item>
+        <item>鄙视</item>
+        <item>委屈</item>
+        <item>快哭了</item>
+        <item>阴险</item>
+        <item>亲亲</item>
+        <item>吓</item>
+    </array>
+
+    <!-- <a class="face qqface52" title="可怜" type="qq">可怜</
+     <a class="face qqface55" title="菜刀" type="qq">菜刀</
+     <a class="face qqface56" title="西瓜" type="qq">西瓜</
+     <a class="face qqface57" title="啤酒" type="qq">啤酒</
+     <a class="face qqface58" title="篮球" type="qq">篮球</
+     <a class="face qqface59" title="乒乓" type="qq">乒乓</
+     <a class="face qqface60" title="咖啡" type="qq">咖啡</
+     <a class="face qqface61" title="饭" type="qq">饭</
+     <a class="face qqface62" title="猪头" type="qq">猪头</
+     <a class="face qqface63" title="玫瑰" type="qq">玫瑰</
+     <a class="face qqface64" title="凋谢" type="qq">凋谢</
+     <a class="face qqface65" title="嘴唇" type="qq">嘴唇</
+     <a class="face qqface66" title="爱心" type="qq">爱心</
+     <a class="face qqface67" title="心碎" type="qq">心碎</
+     <a class="face qqface68" title="蛋糕" type="qq">蛋糕</
+     <a class="face qqface69" title="闪电" type="qq">闪电</
+     <a class="face qqface70" title="炸弹" type="qq">炸弹</
+     <a class="face qqface71" title="刀" type="qq">刀</
+     <a class="face qqface72" title="足球" type="qq">足球</
+     <a class="face qqface73" title="瓢虫" type="qq">瓢虫</
+     <a class="face qqface74" title="便便" type="qq">便便</
+     <a class="face qqface75" title="月亮" type="qq">月亮</
+     <a class="face qqface76" title="太阳" type="qq">太阳</
+     <a class="face qqface77" title="礼物" type="qq">礼物</
+
+
+     <a class="face qqface79" title="强" type="qq">强</
+     <a class="face qqface80" title="弱" type="qq">弱</
+     <a class="face qqface81" title="握手" type="qq">握手</
+     <a class="face qqface82" title="胜利" type="qq">胜利</
+     <a class="face qqface83" title="抱拳" type="qq">抱拳</
+     <a class="face qqface84" title="勾引" type="qq">勾引</
+     <a class="face qqface85" title="拳头" type="qq">拳头</
+     <a class="face qqface86" title="差劲" type="qq">差劲</
+     <a class="face qqface87" title="爱你" type="qq">爱你</
+     <a class="face qqface88" title="NO" type="qq">NO</
+     <a class="face qqface89" title="OK" type="qq">OK</
+     <a class="face qqface90" title="爱情" type="qq">爱情</
+     <a class="face qqface91" title="飞吻" type="qq">飞吻</
+     <a class="face qqface92" title="跳跳" type="qq">跳跳</
+     <a class="face qqface93" title="发抖" type="qq">发抖</
+     <a class="face qqface94" title="怄火" type="qq">怄火</
+     <a class="face qqface95" title="转圈" type="qq">转圈</
+     <a class="face qqface96" title="磕头" type="qq">磕头</
+     <a class="face qqface97" title="回头" type="qq">回头</
+     <a class="face qqface98" title="跳绳" type="qq">跳绳</
+     <a class="face qqface99" title="投降" type="qq">投降</
+     <a class="face qqface100" title="激动" type="qq">激动</
+     <a class="face qqface101" title="乱舞" type="qq">乱舞</
+     <a class="face qqface102" title="献吻" type="qq">献吻</
+     <a class="face qqface103" title="左太极" type="qq">左太极</
+     <a class="face qqface104" title="右太极" type="qq">右太极</-->
+</resources>

@@ -17,15 +17,23 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:supportsRtl="true">
         <activity android:name=".activity.IndexActivity">
-
-        </activity>
-        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN">
                 </action>
                 <category android:name="android.intent.category.LAUNCHER"></category>
             </intent-filter>
         </activity>
+        <activity android:name=".MainActivity">
+
+        </activity>
+
+        <activity android:name=".activity.ListTest">
+
+        </activity>
+
+        <activity android:name=".activity.AddMessageActivity"></activity>
+
+        <activity android:name=".activity.CodeActivity"></activity>
 
     </application>
 

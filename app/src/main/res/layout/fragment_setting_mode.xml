@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent"
+			  android:orientation="vertical">
+
+	<ImageView
+		android:id="@+id/code"
+		android:layout_width="240dp"
+		android:layout_marginTop="48dp"
+		android:layout_gravity="center"
+		android:src="@mipmap/ic_launcher"
+		android:layout_height="240dp"/>
+
+	<TextView
+		android:id="@+id/result"
+		android:layout_gravity="center"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="扫码成功"/>
+	<Button
+		android:id="@+id/update"
+		android:layout_marginTop="8dp"
+		android:layout_gravity="center"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="更换二维码"/>
+
+	<TextView
+		android:layout_marginTop="48dp"
+		android:id="@+id/textView2"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textSize="14sp"
+		android:layout_marginLeft="8dp"
+		android:text="温馨提示:"/>
+	<TextView
+		android:id="@+id/textView3"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="32dp"
+		android:textSize="12sp"
+
+		android:text="1.请用微信扫一扫进行二维码识别"/>
+	<TextView
+		android:id="@+id/textView4"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textSize="12sp"
+		android:layout_marginLeft="32dp"
+		android:text="2.不要重复扫同一个二维码"/>
+	<TextView
+		android:id="@+id/textView5"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textSize="12sp"
+		android:layout_marginLeft="32dp"
+		android:text="3.二维码识别速度与网络有关请谅解"/>
+	<TextView
+		android:id="@+id/textView6"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textSize="12sp"
+		android:layout_marginLeft="32dp"
+		android:text="4.如果二维码未扫描时间超过3分钟，请更换新的二维码！"/>
+
+</LinearLayout>
