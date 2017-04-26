@@ -268,7 +268,7 @@ public class AddMessageActivity extends FragmentActivity {
         bean.setName(msgTitle.getText().toString());
         bean.setObject(objectContent.getText().toString());
         bean.setContent(msgContent.getText().toString());
-        SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 hh:mm:ss");
         bean.setTime(format.format(new Date()));
         dao.insert(bean);
         save.setEnabled(true);
@@ -276,7 +276,7 @@ public class AddMessageActivity extends FragmentActivity {
 
     //改
     private void updateData() {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日 hh:mm:ss");
         updateData = new ModeBean(id, "", msgTitle.getText().toString(), format.format(new Date()), msgContent.getText().toString(), objectContent.getText().toString());
         dao.update(updateData);
         save.setEnabled(true);

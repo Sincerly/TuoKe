@@ -98,7 +98,7 @@ public class ModeListFragment extends Fragment {
 
 	private void reload(){
 		list.clear();
-		list.addAll(dao.loadAll());
+		list.addAll(dao.queryBuilder().orderDesc(ModeBeanDao.Properties.Id).list());
 		recyclerView.getAdapter().notifyDataSetChanged();
 	}
 
@@ -113,7 +113,7 @@ public class ModeListFragment extends Fragment {
 //		messageBean.setName("WEIKUO");
 //		list.add(messageBean);
 
-		list.addAll(dao.loadAll());
+		list.addAll(dao.queryBuilder().orderDesc(ModeBeanDao.Properties.Id).list());
 
 		adapter = new RBaseAdapter<ModeBean>(getActivity(), R.layout.item_mode, list) {
 

@@ -21,6 +21,7 @@ import com.douding.tuoke.adapter.RBaseAdapter;
 import com.douding.tuoke.adapter.RViewHolder;
 import com.douding.tuoke.application.TKApplication;
 import com.douding.tuoke.bean.UserBean;
+import com.douding.tuoke.bean.list.GroupBean;
 import com.douding.tuoke.bean.list.MessageBean;
 import com.douding.tuoke.common.Common;
 import com.douding.tuoke.greendao.MessageBeanDao;
@@ -59,9 +60,8 @@ public class MessageFragment extends Fragment {
     }
 
     private void reload() {
-        Log.e("tag", "MessageFragment Reload" + bean.getMemberList().size());
         list.clear();
-        list.addAll(dao.loadAll());
+        list.addAll(dao.queryBuilder().orderDesc(MessageBeanDao.Properties.Id).list());
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -76,19 +76,46 @@ public class MessageFragment extends Fragment {
 
     private void startSendTask() {
         bean = Common.userBean;
-        if (Common.type == 0) {
+        int type = Common.type;
+        if(type==3){//群组
+            List<String> groupBean=Common.groupBeanList;
+            if(groupBean!=null){
+                for (int i = 0; i <groupBean.size(); i++) {
+                    String name=groupBean.get(i);
+                    new SendMessageTask(name, Common.Content).execute();//发送群消息
+                }
+            }
+        }else {//好友
             if (bean != null) {
                 for (int i = 0; i < bean.getMemberCount(); i++) {
                     UserBean.MemberListBean item = bean.getMemberList().get(i);
-                    new SendMessageTask(item.getUserName(), Common.Content).execute();
+                    if (type == 0) {//0全部 1男 2女 3群组 4男女
+                        if (item.getVerifyFlag() == 0 && item.getContactFlag() == 3) {//
+                            new SendMessageTask(item.getUserName(), Common.Content).execute();
+                        }
+                    } else if (type == 1) {//男
+                        if (item.getSex() == 1) {
+                            new SendMessageTask(item.getUserName(), Common.Content).execute();
+                        }
+                    } else if (type == 2) {//女
+                        if (item.getSex() == 2) {
+                            new SendMessageTask(item.getUserName(), Common.Content).execute();
+                        }
+                    } else if (type == 4) {//男女
+                        if (item.getSex() == 2 || item.getSex() == 1) {
+                            new SendMessageTask(item.getUserName(), Common.Content).execute();
+                        }
+                    }
                 }
-            }else{
+            } else {
                 Toast.makeText(getActivity(), "初始化成员失败！", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     private String wxuin, wxsid, skey, passTicket;
+
+    private int needSendCount = 0;
 
     class SendMessageTask extends AsyncTask {
         private String result;
@@ -120,10 +147,15 @@ public class MessageFragment extends Fragment {
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
             String e = (String) o;
-            Log.e("tag", e + "");
             Log.e("MainActivity SendTask", "发送结束****************************************8");
+            MessageBean messageBean=list.get(0);
+            int num=messageBean.getSendNum()+1;
+            messageBean.setSendNum(num);
+            dao.update(messageBean);
+            recyclerView.getAdapter().notifyItemChanged(0,messageBean);
         }
     }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -152,7 +184,7 @@ public class MessageFragment extends Fragment {
     private void initList() {
         dao = TKApplication.getApplication().getDaoSession().getMessageBeanDao();
         list.clear();
-        list.addAll(dao.loadAll());
+        list.addAll(dao.queryBuilder().orderDesc(MessageBeanDao.Properties.Id).list());
 //		MessageBean messageBean = new MessageBean();
 //		messageBean.setContent("清粉");
 //		messageBean.setObject("全部");
