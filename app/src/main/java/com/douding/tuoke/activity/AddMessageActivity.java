@@ -2,6 +2,7 @@ package com.douding.tuoke.activity;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -29,7 +30,10 @@ import com.douding.tuoke.greendao.ModeBeanDao;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,6 +69,8 @@ public class AddMessageActivity extends FragmentActivity {
 
     private List<ImageBean> images=new ArrayList<>();
 
+    private BlockingQueue<AsyncTask> queue=new LinkedBlockingQueue<>(100);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +86,6 @@ public class AddMessageActivity extends FragmentActivity {
                 objectContent.setText(bean.getObject());
             }
         }
-
         initBiaoQing();
     }
 
@@ -93,7 +98,6 @@ public class AddMessageActivity extends FragmentActivity {
             imageBean.setImageId(getResources().getIdentifier("image_"+(i + 1), "drawable", getPackageName()));
             images.add(imageBean);
         }
-
 
         RBaseAdapter adapter = new RBaseAdapter<ImageBean>(AddMessageActivity.this, R.layout.item_image, images) {
 
