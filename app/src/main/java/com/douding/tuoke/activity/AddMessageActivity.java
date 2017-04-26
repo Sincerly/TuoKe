@@ -69,8 +69,6 @@ public class AddMessageActivity extends FragmentActivity {
 
     private List<ImageBean> images=new ArrayList<>();
 
-    private BlockingQueue<AsyncTask> queue=new LinkedBlockingQueue<>(100);
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +88,6 @@ public class AddMessageActivity extends FragmentActivity {
     }
 
     private void initBiaoQing(){
-
         String[] array=getResources().getStringArray(R.array.biaoqing);
         for (int i=0;i<array.length;i++){
             ImageBean imageBean=new ImageBean();

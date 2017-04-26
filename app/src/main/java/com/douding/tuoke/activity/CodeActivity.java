@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.util.Xml;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,6 +41,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -76,6 +79,7 @@ public class CodeActivity extends Activity {
     private UserInfo userinfo;
     private boolean isNeedSendTask = false;
 
+    private BlockingQueue<AsyncTask> queue = new LinkedBlockingQueue<>(100);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +91,7 @@ public class CodeActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        new RequestTask("").execute();
+        queue.add(new RequestTask("").execute());
     }
 
     @OnClick({R.id.back, R.id.title})
@@ -95,11 +99,29 @@ public class CodeActivity extends Activity {
         switch (v.getId()) {
             case R.id.back:
 //                new RequestTask("").execute();
+                clearTask();
                 finish();
                 break;
             case R.id.title:
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        clearTask();
+        finish();
+    }
+
+    private void clearTask() {
+        Iterator<AsyncTask> iterator = queue.iterator();
+        while (iterator.hasNext()) {
+            AsyncTask task = iterator.next();
+            if (task.getStatus() == AsyncTask.Status.PENDING||task.getStatus()== AsyncTask.Status.RUNNING) {
+                task.cancel(true);
+            }
+        }
+        queue.clear();
     }
 
     class RequestTask extends AsyncTask {
@@ -163,7 +185,7 @@ public class CodeActivity extends Activity {
                         startScan();//发起扫描请求
                         break;
                     case 2:
-                        if (e.contains("window.code=408") || e.contains("window.code=400")|| e.contains("window.code=200")) {
+                        if (e.contains("window.code=408") || e.contains("window.code=400") || e.contains("window.code=200")) {
                             startScan();
                         } else {//201
                             step += 1;
@@ -196,7 +218,7 @@ public class CodeActivity extends Activity {
                         userBean = new Gson().fromJson(result, UserBean.class);
                         if (userBean != null) {
                             Log.e("tag", "成员数量:" + userBean.getMemberList().size());
-                            Common.userBean=userBean;//用户所有信息bean
+                            Common.userBean = userBean;//用户所有信息bean
                             step += 1;
                             getUserInfo();
                         } else {
@@ -206,10 +228,10 @@ public class CodeActivity extends Activity {
                     case 6:
                         Log.e("tag", "*************************Step6");
                         userinfo = new Gson().fromJson(result, UserInfo.class);
-                        groupBeans= (List<LinkedTreeMap>) userinfo.getContactList();
+                        groupBeans = (List<LinkedTreeMap>) userinfo.getContactList();
                         if (userinfo != null && userinfo.getUser() != null) {
                             Log.e("tag", userinfo.getUser().getNickName() + "名称:" + userinfo.getUser().getUserName());
-                            Common.NickName =userinfo.getUser().getNickName() == null ? "" : userinfo.getUser().getNickName();
+                            Common.NickName = userinfo.getUser().getNickName() == null ? "" : userinfo.getUser().getNickName();
                             Common.Name = userinfo.getUser().getUserName();
                         }
                         handler.sendEmptyMessage(FINISH);
@@ -250,10 +272,10 @@ public class CodeActivity extends Activity {
                     Common.needSend = true;
                     Intent intent = new Intent();
                     intent.setAction("com.sincerly.message");
-                    intent.putExtra("uin",wxuin);
-                    intent.putExtra("sid",wxsid);
-                    intent.putExtra("skey",skey);
-                    intent.putExtra("passTicket",passTicket);
+                    intent.putExtra("uin", wxuin);
+                    intent.putExtra("sid", wxsid);
+                    intent.putExtra("skey", skey);
+                    intent.putExtra("passTicket", passTicket);
 
                     sendBroadcast(intent);
                     finish();
@@ -262,28 +284,28 @@ public class CodeActivity extends Activity {
         }
     };
 
-    private int getCount(){
-        int count=0;
-        int type=Common.type;
+    private int getCount() {
+        int count = 0;
+        int type = Common.type;
 
-        if(type==3){//群组
-            List<String> groups=new ArrayList<>();
-            if(groupBeans!=null){
-                for (int i = 0; i <groupBeans.size() ; i++) {
-                    LinkedTreeMap map=groupBeans.get(i);
-                    if(map.containsKey("MemberCount")){
-                        double c= (double) map.get("MemberCount");
-                        if(c>0.0){
+        if (type == 3) {//群组
+            List<String> groups = new ArrayList<>();
+            if (groupBeans != null) {
+                for (int i = 0; i < groupBeans.size(); i++) {
+                    LinkedTreeMap map = groupBeans.get(i);
+                    if (map.containsKey("MemberCount")) {
+                        double c = (double) map.get("MemberCount");
+                        if (c > 0.0) {
                             groups.add((String) map.get("UserName"));
                         }
                     }
                 }
-                count=groups.size();//群组个数
-                Common.groupBeanList=groups;//赋给全局变量
-            }else{
+                count = groups.size();//群组个数
+                Common.groupBeanList = groups;//赋给全局变量
+            } else {
                 Toast.makeText(this, "您暂时还没群组", Toast.LENGTH_SHORT).show();
             }
-        }else {
+        } else {
             if (userBean != null && userBean.getMemberList() != null) {
                 List<UserBean.MemberListBean> list = userBean.getMemberList();
                 int size = list.size();
@@ -308,19 +330,19 @@ public class CodeActivity extends Activity {
         String result = "";
         switch (type) {
             case 0:
-                result="全部";
+                result = "全部";
                 break;
             case 1:
-                result="男";
+                result = "男";
                 break;
             case 2:
-                result="女";
+                result = "女";
                 break;
             case 3:
-                result="群组";
+                result = "群组";
                 break;
             case 4:
-                result="男女";
+                result = "男女";
                 break;
         }
         return result;
@@ -349,7 +371,7 @@ public class CodeActivity extends Activity {
      */
     private void startScan() {
         if (!isNeedSendTask) {
-            new RequestTask("").execute();
+            queue.add(new RequestTask("").execute());
         }
     }
 
@@ -358,7 +380,7 @@ public class CodeActivity extends Activity {
      */
     private void getLoginState() {
         if (!isNeedSendTask) {
-            new RequestTask("").execute();
+            queue.add(new RequestTask("").execute());
         }
     }
 
@@ -367,7 +389,7 @@ public class CodeActivity extends Activity {
      */
     private void getPassTicketTask() {
         if (!isNeedSendTask) {
-            new RequestTask("").execute();
+            queue.add(new RequestTask("").execute());
         }
     }
 
@@ -376,7 +398,7 @@ public class CodeActivity extends Activity {
      */
     private void getFriends() {
         if (!isNeedSendTask) {
-            new RequestTask("").execute();
+            queue.add(new RequestTask("").execute());
         }
     }
 
@@ -385,7 +407,7 @@ public class CodeActivity extends Activity {
      */
     private void sendMessage() {
         if (!isNeedSendTask) {
-            new RequestTask("").execute();
+            queue.add(new RequestTask("").execute());
         }
     }
 
@@ -394,7 +416,7 @@ public class CodeActivity extends Activity {
      */
     private void getUserInfo() {
         if (!isNeedSendTask) {
-            new RequestTask("").execute();
+            queue.add(new RequestTask("").execute());
         }
     }
 
