@@ -83,7 +83,7 @@ public class AuthUtil {
 		if (entity != null) {
 			result = EntityUtils.toString(entity, "utf-8");
 			cookieStore = client.getCookieStore();
-			Log.e("tag", client.getCookieStore() + "");
+			Log.e("reponse Cookie", client.getCookieStore() + "");
 			Log.e("reponse Body:", result);
 		}
 		return result;
@@ -114,15 +114,15 @@ public class AuthUtil {
 	}
 
 	//Step5.获取cookie信息以及skey、wxsid、wxuin、pass_ticket
-	public static String getPassTicket(String ticket, String uid, String scan) throws IOException {
+	public static String getPassTicket2(String ticket, String uid, String scan) throws IOException {
 		String url = "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=" + ticket + "&uuid=" + uid + "&lang=zh_CN" + "&scan=" + scan + "&fun=new&version=v2&lang=zh_CN";
 		Log.e("getPassTicket:", url);
 		return doGetByPassTicket(url);
 	}
 
 	//Step5.获取cookie信息以及skey、wxsid、wxuin、pass_ticket
-	public static String getPassTicket2(String ticket, String uid, String scan) throws IOException {
-		String url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=" + ticket + "&uuid=" + uid + "&lang=zh_CN" + "&scan=" + scan + "&fun=old&version=v2&lang=zh_CN";
+	public static String getPassTicket(String ticket, String uid, String scan) throws IOException {
+		String url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=" + ticket + "&uuid=" + uid + "&lang=zh_CN" + "&scan=" + scan + "&fun=new&version=v2&lang=zh_CN";
 		Log.e("getPassTicket:", url);
 		return doGetByPassTicket(url);
 	}
@@ -130,14 +130,24 @@ public class AuthUtil {
 	/**
 	 * Step6.获取好友列表
 	 */
-	public static String getFriendsList(String passTicket, String skey) throws IOException {
+	public static String getFriendsList2(String passTicket, String skey) throws IOException {
 		long time = System.currentTimeMillis();
 		String url = "https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact?lang=zh_CN&pass_ticket=" + passTicket + "&r=" + time + "&seq=0&skey=" + skey;
 		Log.e("getFrientds List:", url);
 		return doGet2(url);
 	}
 
-	public static String sendMessage(String uin, String sid, String skey, String msgContent, String msgFrom, String msgTo, String passTicket) {
+	/**
+	 * Step6.获取好友列表
+	 */
+	public static String getFriendsList(String passTicket, String skey) throws IOException {
+		long time = System.currentTimeMillis();
+		String url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact?lang=zh_CN&pass_ticket=" + passTicket + "&r=" + time + "&seq=0&skey=" + skey;
+		Log.e("getFrientds List:", url);
+		return doGet2(url);
+	}
+
+	public static String sendMessage2(String uin, String sid, String skey, String msgContent, String msgFrom, String msgTo, String passTicket) {
 		/*{
             "BaseRequest":{
                 "Uin":2030848144,
@@ -182,6 +192,51 @@ public class AuthUtil {
 		return result;
 	}
 
+	public static String sendMessage(String uin, String sid, String skey, String msgContent, String msgFrom, String msgTo, String passTicket) {
+		/*{
+            "BaseRequest":{
+                "Uin":2030848144,
+                "Sid":"ybByfS7EQgNbpwD/",
+                "Skey":"@crypt_34bcc840_b06737e87a00267465940bae222c9d97",
+                "DeviceID":"e767417338405260"},
+            "Msg":{
+                "Type":1,
+                "Content":"11",
+                "FromUserName":"@421cfbaa030e7b8c5037b049974710172eeb61325c74bde5132572bb52f1656e",
+                "ToUserName":"@efb10c4153bf67af14fd2166a6b0a704a94988303e2574e874d6c99f860bc23c",
+                "LocalID":"14929139788750230",
+                "ClientMsgId":"14929139788750230"},
+            "Scene":0
+        }*/
+		RequestPayload rp = new RequestPayload();
+		RequestPayload.BaseRequestBean baseRequestBean = new RequestPayload.BaseRequestBean();
+		baseRequestBean.setDeviceID("e6666666666666");
+		baseRequestBean.setSid(sid);
+		baseRequestBean.setUin(uin);
+		baseRequestBean.setSkey(skey);
+		rp.setBaseRequest(baseRequestBean);
+
+		long time=System.currentTimeMillis()*10000;
+		int num=Math.round(9999);
+		RequestPayload.MsgBean msg = new RequestPayload.MsgBean();
+		msg.setContent(msgContent);
+		msg.setClientMsgId(String.valueOf(time+num));
+		msg.setFromUserName(Common.Name);//自己id
+		msg.setToUserName(msgTo);//发送给谁
+		msg.setLocalID(String.valueOf(time+num));
+		msg.setType(1);//文字消息
+		rp.setMsg(msg);
+		rp.setScene(0);
+
+		String result = "";
+		String url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsendmsg?lang=zh_CN&pass_ticket=" + passTicket;
+		Log.e("sendMessage HeaderJson:", new Gson().toJson(rp));
+		Log.e("sendMessage Url:", url);
+		result = doPost2(url,new Gson().toJson(rp));
+		Log.e("tag", "返回的结果" + result);
+		return result;
+	}
+
 	private static String doPost2(String url, String strJson) {
 		DefaultHttpClient client = new DefaultHttpClient();
 		if(cookieStore!=null){
@@ -219,8 +274,31 @@ public class AuthUtil {
 	 * @param passTicket
 	 * @return
 	 */
-	public static String getUserInfo(String sid,String skey,String uin,String passTicket){
+	public static String getUserInfo2(String sid,String skey,String uin,String passTicket){
 		String url="https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=862039733&lang=zh_CN&pass_ticket="+passTicket;
+		RequestUserInfo info=new RequestUserInfo();
+		RequestUserInfo.BaseRequestBean rb=new RequestUserInfo.BaseRequestBean();
+		rb.setDeviceID("e6666666666666666666");
+		rb.setSid(sid);
+		rb.setSkey(skey);
+		rb.setUin(uin);
+		info.setBaseRequest(rb);
+		Log.e("getUserInfo url:",url);
+		Log.e("getUserInfo",new Gson().toJson(info));
+		String result=doPost2(url,new Gson().toJson(info));
+		return result;
+	};
+
+	/**
+	 * 获取个人信息
+	 * @param sid
+	 * @param skey
+	 * @param uin
+	 * @param passTicket
+	 * @return
+	 */
+	public static String getUserInfo(String sid,String skey,String uin,String passTicket){
+		String url="https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=862039733&lang=zh_CN&pass_ticket="+passTicket;
 		RequestUserInfo info=new RequestUserInfo();
 		RequestUserInfo.BaseRequestBean rb=new RequestUserInfo.BaseRequestBean();
 		rb.setDeviceID("e6666666666666666666");

@@ -27,6 +27,7 @@ import com.douding.tuoke.common.Common;
 import com.douding.tuoke.greendao.MessageBeanDao;
 import com.douding.tuoke.greendao.ModeBeanDao;
 import com.douding.tuoke.util.AuthUtil;
+import com.douding.tuoke.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +70,7 @@ public class MessageFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (Common.needSend) {
+            isWxNew=Common.isWxNew;
             Common.needSend = false;
             startSendTask();//开始发送信息
         }
@@ -77,33 +79,37 @@ public class MessageFragment extends Fragment {
     private void startSendTask() {
         bean = Common.userBean;
         int type = Common.type;
-        if(type==3){//群组
-            List<String> groupBean=Common.groupBeanList;
-            if(groupBean!=null){
-                for (int i = 0; i <groupBean.size(); i++) {
-                    String name=groupBean.get(i);
-                    new SendMessageTask(name, Common.Content).execute();//发送群消息
+        if (type == 3) {//群组
+            List<String> groupBean = Common.groupBeanList;
+            if (groupBean != null) {
+                if (Utils.isOpenNetwork(getActivity())) {
+                    for (int i = 0; i < groupBean.size(); i++) {
+                        String name = groupBean.get(i);
+                        new SendMessageTask(name, Common.Content).execute();//发送群消息
+                    }
                 }
             }
-        }else {//好友
+        } else {//好友
             if (bean != null) {
-                for (int i = 0; i < bean.getMemberCount(); i++) {
-                    UserBean.MemberListBean item = bean.getMemberList().get(i);
-                    if (type == 0) {//0全部 1男 2女 3群组 4男女
-                        if (item.getVerifyFlag() == 0 && item.getContactFlag() == 3) {//
-                            new SendMessageTask(item.getUserName(), Common.Content).execute();
-                        }
-                    } else if (type == 1) {//男
-                        if (item.getSex() == 1) {
-                            new SendMessageTask(item.getUserName(), Common.Content).execute();
-                        }
-                    } else if (type == 2) {//女
-                        if (item.getSex() == 2) {
-                            new SendMessageTask(item.getUserName(), Common.Content).execute();
-                        }
-                    } else if (type == 4) {//男女
-                        if (item.getSex() == 2 || item.getSex() == 1) {
-                            new SendMessageTask(item.getUserName(), Common.Content).execute();
+                if (Utils.isOpenNetwork(getActivity())) {
+                    for (int i = 0; i < bean.getMemberCount(); i++) {
+                        UserBean.MemberListBean item = bean.getMemberList().get(i);
+                        if (type == 0) {//0全部 1男 2女 3群组 4男女
+                            if (item.getVerifyFlag() == 0 && item.getContactFlag() == 3) {//
+                                new SendMessageTask(item.getUserName(), Common.Content).execute();
+                            }
+                        } else if (type == 1) {//男
+                            if (item.getSex() == 1) {
+                                new SendMessageTask(item.getUserName(), Common.Content).execute();
+                            }
+                        } else if (type == 2) {//女
+                            if (item.getSex() == 2) {
+                                new SendMessageTask(item.getUserName(), Common.Content).execute();
+                            }
+                        } else if (type == 4) {//男女
+                            if (item.getSex() == 2 || item.getSex() == 1) {
+                                new SendMessageTask(item.getUserName(), Common.Content).execute();
+                            }
                         }
                     }
                 }
@@ -114,6 +120,7 @@ public class MessageFragment extends Fragment {
     }
 
     private String wxuin, wxsid, skey, passTicket;
+    private boolean isWxNew=false;
 
     private int needSendCount = 0;
 
@@ -136,7 +143,11 @@ public class MessageFragment extends Fragment {
         @Override
         protected Object doInBackground(Object[] objects) {
             try {
-                result = AuthUtil.sendMessage(wxuin, wxsid, skey, msg, "fromA", toUserName, passTicket);
+                if(isWxNew){
+                    result = AuthUtil.sendMessage2(wxuin, wxsid, skey, msg, "fromA", toUserName, passTicket);
+                }else{//v2
+                    result = AuthUtil.sendMessage(wxuin, wxsid, skey, msg, "fromA", toUserName, passTicket);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -148,14 +159,13 @@ public class MessageFragment extends Fragment {
             super.onPostExecute(o);
             String e = (String) o;
             Log.e("MainActivity SendTask", "发送结束****************************************8");
-            MessageBean messageBean=list.get(0);
-            int num=messageBean.getSendNum()+1;
+            MessageBean messageBean = list.get(0);
+            int num = messageBean.getSendNum() + 1;
             messageBean.setSendNum(num);
             dao.update(messageBean);
-            recyclerView.getAdapter().notifyItemChanged(0,messageBean);
+            recyclerView.getAdapter().notifyItemChanged(0, messageBean);
         }
     }
-
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

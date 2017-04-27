@@ -22,4 +22,5 @@ public class Common {
 	public static UserBean userBean;
 	public static UserBean userInfo;//包含群组
 	public static List<String> groupBeanList;//群组Name  @1231456456464
+	public static boolean isWxNew=false;
 }

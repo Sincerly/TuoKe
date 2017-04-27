@@ -25,6 +25,7 @@ import com.douding.tuoke.common.Common;
 import com.douding.tuoke.fragment.SettingModeFragment;
 import com.douding.tuoke.greendao.MessageBeanDao;
 import com.douding.tuoke.util.AuthUtil;
+import com.douding.tuoke.util.Utils;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 
@@ -91,7 +92,9 @@ public class CodeActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        queue.add(new RequestTask("").execute());
+        if (Utils.isOpenNetwork(CodeActivity.this)) {
+            queue.add(new RequestTask("").execute());
+        }
     }
 
     @OnClick({R.id.back, R.id.title})
@@ -99,7 +102,7 @@ public class CodeActivity extends Activity {
         switch (v.getId()) {
             case R.id.back:
 //                new RequestTask("").execute();
-                clearTask();
+                //clearTask();
                 finish();
                 break;
             case R.id.title:
@@ -117,11 +120,10 @@ public class CodeActivity extends Activity {
         Iterator<AsyncTask> iterator = queue.iterator();
         while (iterator.hasNext()) {
             AsyncTask task = iterator.next();
-            if (task.getStatus() == AsyncTask.Status.PENDING||task.getStatus()== AsyncTask.Status.RUNNING) {
+            if (task.getStatus() == AsyncTask.Status.PENDING || task.getStatus() == AsyncTask.Status.RUNNING) {
                 task.cancel(true);
             }
         }
-        queue.clear();
     }
 
     class RequestTask extends AsyncTask {
@@ -155,14 +157,26 @@ public class CodeActivity extends Activity {
                         result = AuthUtil.getLoginState(uid);
                         break;
                     case 4:
-                        result = AuthUtil.getPassTicket(ticket, uid, scan);
+                        if(isWxNew){//认证新版本  获取passTicket
+                            result = AuthUtil.getPassTicket2(ticket, uid, scan);
+                        }else{//首先进行旧版本认证
+                            result = AuthUtil.getPassTicket(ticket, uid, scan);
+                        }
                         break;
                     case 5:
-                        result = AuthUtil.getFriendsList(ticket, skey);
+                        if(isWxNew){
+                            result = AuthUtil.getFriendsList2(ticket, skey);
+                        }else{
+                            result = AuthUtil.getFriendsList(ticket, skey);
+                        }
                         break;
                     case 6://获取个人信息
                         ////模拟发送消息 result = AuthUtil.sendMessage(wxuin, wxsid, skey, "内容测试", "fromA", "fromB", passTicket);
-                        result = AuthUtil.getUserInfo(wxsid, skey, wxuin, passTicket);
+                        if(isWxNew) {
+                            result = AuthUtil.getUserInfo2(wxsid, skey, wxuin, passTicket);
+                        }else{//v2
+                            result = AuthUtil.getUserInfo(wxsid, skey, wxuin, passTicket);
+                        }
                         break;
                     default:
                         break;
@@ -176,74 +190,83 @@ public class CodeActivity extends Activity {
         @Override
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
-            if (o != null) {
-                String e = (String) o;
-                switch (step) {
-                    case 0://获取uid 并加载二维码
-                        step += 2;
-                        Glide.with(CodeActivity.this).load("https://login.weixin.qq.com/qrcode/" + uid).into(mCodeImage);
-                        startScan();//发起扫描请求
-                        break;
-                    case 2:
-                        if (e.contains("window.code=408") || e.contains("window.code=400") || e.contains("window.code=200")) {
-                            startScan();
-                        } else {//201
-                            step += 1;
-                            getLoginState();//判断是否登录
-                        }
-                        break;
-                    case 3://轮循 判断是否点击登录按钮
-                        if (e.contains("window.code=408")) {
-                            getLoginState();
-                        } else {//返回201 登录成功
-                            step += 1;
-                            if (parseTicketAndScan(result)) {//如果解析完毕就获取cookie
-                                getPassTicketTask();
-                            }
-                        }
-                        break;
-                    case 4://获取cookie信息以及skey、wxsid、wxuin、pass_ticket
-                        try {
-                            if (parseXml(e)) {
+            if (Utils.isOpenNetwork(CodeActivity.this)) {
+                if (o != null) {
+                    String e = (String) o;
+                    switch (step) {
+                        case 0://获取uid 并加载二维码
+                            step += 2;
+                            Glide.with(CodeActivity.this).load("https://login.weixin.qq.com/qrcode/" + uid).into(mCodeImage);
+                            startScan();//发起扫描请求
+                            break;
+                        case 2:
+                            if (e.contains("window.code=408") || e.contains("window.code=400") ) {
+                                startScan();
+                            } else {//201
                                 step += 1;
-                                getFriends();
+                                getLoginState();//判断是否登录
                             }
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        } catch (XmlPullParserException e1) {
-                            e1.printStackTrace();
-                        }
-                        break;
-                    case 5:
-                        userBean = new Gson().fromJson(result, UserBean.class);
-                        if (userBean != null) {
-                            Log.e("tag", "成员数量:" + userBean.getMemberList().size());
-                            Common.userBean = userBean;//用户所有信息bean
-                            step += 1;
-                            getUserInfo();
-                        } else {
-                            Log.e("tag", "UserBean 为空");
-                        }
-                        break;
-                    case 6:
-                        Log.e("tag", "*************************Step6");
-                        userinfo = new Gson().fromJson(result, UserInfo.class);
-                        groupBeans = (List<LinkedTreeMap>) userinfo.getContactList();
-                        if (userinfo != null && userinfo.getUser() != null) {
-                            Log.e("tag", userinfo.getUser().getNickName() + "名称:" + userinfo.getUser().getUserName());
-                            Common.NickName = userinfo.getUser().getNickName() == null ? "" : userinfo.getUser().getNickName();
-                            Common.Name = userinfo.getUser().getUserName();
-                        }
-                        handler.sendEmptyMessage(FINISH);
-                        break;
-                    default:
-                        break;
+                            break;
+                        case 3://轮循 判断是否点击登录按钮
+                            if (e.contains("window.code=408")) {
+                                getLoginState();
+                            } else {//返回201 登录成功
+                                step += 1;
+                                if (parseTicketAndScan(result)) {//如果解析完毕就获取cookie
+                                    getPassTicketTask();
+                                }
+                            }
+                            break;
+                        case 4://获取cookie信息以及skey、wxsid、wxuin、pass_ticket
+                            if("".equals(e)||e.contains("redirecturl")){//旧版本返回的结果  需要发送wx2认证
+                                isWxNew=true;
+                                getPassTicketTask2();
+                            }else {//新版本wx2 返回结果
+                                try {
+                                    if (parseXml(e)) {
+                                        step += 1;
+                                        getFriends();
+                                    }
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                } catch (XmlPullParserException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                            break;
+                        case 5:
+                            userBean = new Gson().fromJson(result, UserBean.class);
+                            if (userBean != null) {
+                                Log.e("tag", "成员数量:" + userBean.getMemberList().size());
+                                Common.userBean = userBean;//用户所有信息bean
+                                step += 1;
+                                getUserInfo();
+                            } else {
+                                Log.e("tag", "UserBean 为空");
+                            }
+                            break;
+                        case 6:
+                            Log.e("tag", "*************************Step6");
+                            userinfo = new Gson().fromJson(result, UserInfo.class);
+                            groupBeans = (List<LinkedTreeMap>) userinfo.getContactList();
+                            if (userinfo != null && userinfo.getUser() != null) {
+                                Log.e("tag", userinfo.getUser().getNickName() + "名称:" + userinfo.getUser().getUserName());
+                                Common.NickName = userinfo.getUser().getNickName() == null ? "" : userinfo.getUser().getNickName();
+                                Common.Name = userinfo.getUser().getUserName();
+                                Common.isWxNew=isWxNew;//判断接口状态
+                            }
+                            handler.sendEmptyMessage(FINISH);
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         }
     }
 
     private List<LinkedTreeMap> groupBeans;
+    private boolean isWxNew=false;
 
     MessageBeanDao dao;
     private Handler handler = new Handler() {
@@ -379,7 +402,7 @@ public class CodeActivity extends Activity {
      * 手机是否点登录按钮
      */
     private void getLoginState() {
-        if (!isNeedSendTask) {
+        if (Utils.isOpenNetwork(CodeActivity.this)) {
             queue.add(new RequestTask("").execute());
         }
     }
@@ -388,7 +411,16 @@ public class CodeActivity extends Activity {
      * 获取passticket
      */
     private void getPassTicketTask() {
-        if (!isNeedSendTask) {
+        if (Utils.isOpenNetwork(CodeActivity.this)) {
+            queue.add(new RequestTask("").execute());
+        }
+    }
+
+    /**
+     * 获取passticket2
+     */
+    private void getPassTicketTask2() {//解决微信版本问题
+        if (Utils.isOpenNetwork(CodeActivity.this)) {
             queue.add(new RequestTask("").execute());
         }
     }
@@ -397,7 +429,7 @@ public class CodeActivity extends Activity {
      * 获取好友列表
      */
     private void getFriends() {
-        if (!isNeedSendTask) {
+        if (Utils.isOpenNetwork(CodeActivity.this)) {
             queue.add(new RequestTask("").execute());
         }
     }
@@ -406,7 +438,7 @@ public class CodeActivity extends Activity {
      * 发送消息
      */
     private void sendMessage() {
-        if (!isNeedSendTask) {
+        if (Utils.isOpenNetwork(CodeActivity.this)) {
             queue.add(new RequestTask("").execute());
         }
     }
@@ -415,7 +447,7 @@ public class CodeActivity extends Activity {
      * 发送消息
      */
     private void getUserInfo() {
-        if (!isNeedSendTask) {
+        if (Utils.isOpenNetwork(CodeActivity.this)) {
             queue.add(new RequestTask("").execute());
         }
     }
