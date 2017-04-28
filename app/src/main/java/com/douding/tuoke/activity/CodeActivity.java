@@ -102,7 +102,7 @@ public class CodeActivity extends Activity {
         switch (v.getId()) {
             case R.id.back:
 //                new RequestTask("").execute();
-                //clearTask();
+                clearTask();
                 finish();
                 break;
             case R.id.title:
@@ -141,6 +141,9 @@ public class CodeActivity extends Activity {
 
         @Override
         protected Object doInBackground(Object[] objects) {
+            if (isCancelled()) {
+                return null;
+            }
             try {
                 switch (step) {
                     case 0: //获取uuid
@@ -157,24 +160,24 @@ public class CodeActivity extends Activity {
                         result = AuthUtil.getLoginState(uid);
                         break;
                     case 4:
-                        if(isWxNew){//认证新版本  获取passTicket
+                        if (isWxNew) {//认证新版本  获取passTicket
                             result = AuthUtil.getPassTicket2(ticket, uid, scan);
-                        }else{//首先进行旧版本认证
+                        } else {//首先进行旧版本认证
                             result = AuthUtil.getPassTicket(ticket, uid, scan);
                         }
                         break;
                     case 5:
-                        if(isWxNew){
+                        if (isWxNew) {
                             result = AuthUtil.getFriendsList2(ticket, skey);
-                        }else{
+                        } else {
                             result = AuthUtil.getFriendsList(ticket, skey);
                         }
                         break;
                     case 6://获取个人信息
                         ////模拟发送消息 result = AuthUtil.sendMessage(wxuin, wxsid, skey, "内容测试", "fromA", "fromB", passTicket);
-                        if(isWxNew) {
+                        if (isWxNew) {
                             result = AuthUtil.getUserInfo2(wxsid, skey, wxuin, passTicket);
-                        }else{//v2
+                        } else {//v2
                             result = AuthUtil.getUserInfo(wxsid, skey, wxuin, passTicket);
                         }
                         break;
@@ -190,8 +193,8 @@ public class CodeActivity extends Activity {
         @Override
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
-            if (Utils.isOpenNetwork(CodeActivity.this)) {
-                if (o != null) {
+            if (o != null) {
+                if (Utils.isOpenNetwork(CodeActivity.this)) {
                     String e = (String) o;
                     switch (step) {
                         case 0://获取uid 并加载二维码
@@ -200,7 +203,7 @@ public class CodeActivity extends Activity {
                             startScan();//发起扫描请求
                             break;
                         case 2:
-                            if (e.contains("window.code=408") || e.contains("window.code=400") ) {
+                            if (e.contains("window.code=408") || e.contains("window.code=400")) {
                                 startScan();
                             } else {//201
                                 step += 1;
@@ -218,10 +221,10 @@ public class CodeActivity extends Activity {
                             }
                             break;
                         case 4://获取cookie信息以及skey、wxsid、wxuin、pass_ticket
-                            if("".equals(e)||e.contains("redirecturl")){//旧版本返回的结果  需要发送wx2认证
-                                isWxNew=true;
+                            if ("".equals(e) || e.contains("redirecturl")) {//旧版本返回的结果  需要发送wx2认证
+                                isWxNew = true;
                                 getPassTicketTask2();
-                            }else {//新版本wx2 返回结果
+                            } else {//新版本wx2 返回结果
                                 try {
                                     if (parseXml(e)) {
                                         step += 1;
@@ -253,7 +256,7 @@ public class CodeActivity extends Activity {
                                 Log.e("tag", userinfo.getUser().getNickName() + "名称:" + userinfo.getUser().getUserName());
                                 Common.NickName = userinfo.getUser().getNickName() == null ? "" : userinfo.getUser().getNickName();
                                 Common.Name = userinfo.getUser().getUserName();
-                                Common.isWxNew=isWxNew;//判断接口状态
+                                Common.isWxNew = isWxNew;//判断接口状态
                             }
                             handler.sendEmptyMessage(FINISH);
                             break;
@@ -266,7 +269,7 @@ public class CodeActivity extends Activity {
     }
 
     private List<LinkedTreeMap> groupBeans;
-    private boolean isWxNew=false;
+    private boolean isWxNew = false;
 
     MessageBeanDao dao;
     private Handler handler = new Handler() {
@@ -312,8 +315,8 @@ public class CodeActivity extends Activity {
         int type = Common.type;
 
         if (type == 3) {//群组
-            List<String> groups = new ArrayList<>();
             if (groupBeans != null) {
+                List<String> groups = new ArrayList<>();
                 for (int i = 0; i < groupBeans.size(); i++) {
                     LinkedTreeMap map = groupBeans.get(i);
                     if (map.containsKey("MemberCount")) {
@@ -328,15 +331,42 @@ public class CodeActivity extends Activity {
             } else {
                 Toast.makeText(this, "您暂时还没群组", Toast.LENGTH_SHORT).show();
             }
+        } else if (type == 0) {//全部
+            if (groupBeans != null) {
+                List<String> groups = new ArrayList<>();
+                for (int i = 0; i < groupBeans.size(); i++) {
+                    LinkedTreeMap map = groupBeans.get(i);
+                    if (map.containsKey("ContactFlag")) {
+                        if (map.containsKey("VerifyFlag")) {
+                            double contactFlag = (double) map.get("ContactFlag");
+                            double verifyFlag = (double) map.get("VerifyFlag");
+                            if (contactFlag == 3.0 && verifyFlag == 0.0) {
+                                groups.add((String) map.get("UserName"));
+                            }
+                        }
+                    }
+                    if (map.containsKey("MemberCount")) {
+                        double c = (double) map.get("MemberCount");
+                        if (c > 0.0) {
+                            groups.add((String) map.get("UserName"));
+                        }
+                    }
+                }
+                count = groups.size();//群组个数
+                Common.groupBeanList = groups;//赋给全局变量
+            } else {
+                Toast.makeText(this, "获取成员列表信息失败", Toast.LENGTH_SHORT).show();
+            }
         } else {
             if (userBean != null && userBean.getMemberList() != null) {
                 List<UserBean.MemberListBean> list = userBean.getMemberList();
                 int size = list.size();
                 for (int i = 0; i < size; i++) {
                     UserBean.MemberListBean bean = list.get(i);
-                    if (type == 0 && bean.getVerifyFlag() == 0 && bean.getContactFlag() == 3) {//全部
-                        count += 1;
-                    } else if (type == 1 && bean.getSex() == 1 && !"".equals(bean.getAlias())) {//男
+//                    if (type == 0 && bean.getVerifyFlag() == 0 && bean.getContactFlag() == 3) {//全部
+//                        count += 1;
+//                    } else
+                    if (type == 1 && bean.getSex() == 1 && !"".equals(bean.getAlias())) {//男
                         count += 1;
                     } else if (type == 2 && bean.getSex() == 2) {//女
                         count += 1;
@@ -394,7 +424,7 @@ public class CodeActivity extends Activity {
      */
     private void startScan() {
         if (!isNeedSendTask) {
-            queue.add(new RequestTask("").execute());
+            queue.add(new RequestTask("").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
         }
     }
 
@@ -403,7 +433,7 @@ public class CodeActivity extends Activity {
      */
     private void getLoginState() {
         if (Utils.isOpenNetwork(CodeActivity.this)) {
-            queue.add(new RequestTask("").execute());
+            queue.add(new RequestTask("").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR));
         }
     }
 

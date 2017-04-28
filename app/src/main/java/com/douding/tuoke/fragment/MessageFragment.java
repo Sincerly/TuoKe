@@ -89,16 +89,28 @@ public class MessageFragment extends Fragment {
                     }
                 }
             }
-        } else {//好友
+        }else if(type==0){//全部
+            List<String> groupBean = Common.groupBeanList;
+            if (groupBean != null) {
+                if (Utils.isOpenNetwork(getActivity())) {
+                    for (int i = 0; i < groupBean.size(); i++) {
+                        String name = groupBean.get(i);
+                        new SendMessageTask(name, Common.Content).execute();//发送全部
+                    }
+                }
+            }
+        }
+        else {//好友
             if (bean != null) {
                 if (Utils.isOpenNetwork(getActivity())) {
                     for (int i = 0; i < bean.getMemberCount(); i++) {
                         UserBean.MemberListBean item = bean.getMemberList().get(i);
-                        if (type == 0) {//0全部 1男 2女 3群组 4男女
-                            if (item.getVerifyFlag() == 0 && item.getContactFlag() == 3) {//
-                                new SendMessageTask(item.getUserName(), Common.Content).execute();
-                            }
-                        } else if (type == 1) {//男
+//                        if (type == 0) {//0全部 1男 2女 3群组 4男女
+//                            if (item.getVerifyFlag() == 0 && item.getContactFlag() == 3) {//
+//                                new SendMessageTask(item.getUserName(), Common.Content).execute();
+//                            }
+//                        } else
+                        if (type == 1) {//男
                             if (item.getSex() == 1) {
                                 new SendMessageTask(item.getUserName(), Common.Content).execute();
                             }

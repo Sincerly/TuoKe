@@ -67,6 +67,30 @@ public class AuthUtil {
 		return result;
 	}
 
+	public static DefaultHttpClient client;
+
+	/**
+	 * 取消网络请求
+	 * @param url
+	 * @return
+	 * @throws IOException
+     */
+	public static String doGetHasConnectionOut(String url) throws IOException {
+		String result = "";
+		client = new DefaultHttpClient();
+		HttpGet httpGet = new HttpGet(url);
+		//设置cookie
+		client.setCookieStore(cookieStore);
+		HttpResponse response = client.execute(httpGet);
+		HttpEntity entity = response.getEntity();
+		if (entity != null) {
+			result = EntityUtils.toString(entity, "utf-8");
+			Log.e("tag", client.getCookieStore() + "");
+			Log.e("reponse Body:", result);
+		}
+		return result;
+	}
+
 	/**
 	 * 获取getPassTicket
 	 * @param url
@@ -102,7 +126,8 @@ public class AuthUtil {
 //        long time=System.currentTimeMillis();
 		String url = "https://login.wx2.qq.com/cgi-bin/mmwebwx-bin/login?loginicon=true&uuid=" + uid + "&tip=1&r=1824897301&_=" + t;
 		Log.e("scanState:", url);
-		return doGet(url);
+//		return doGet(url);
+		return doGetHasConnectionOut(url);
 	}
 
 	//Step4.手机点击登录 调用接口
@@ -188,7 +213,6 @@ public class AuthUtil {
 		Log.e("sendMessage HeaderJson:", new Gson().toJson(rp));
 		Log.e("sendMessage Url:", url);
 		result = doPost2(url,new Gson().toJson(rp));
-		Log.e("tag", "返回的结果" + result);
 		return result;
 	}
 

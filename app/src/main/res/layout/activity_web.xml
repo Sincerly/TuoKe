@@ -7,8 +7,13 @@
     <include
         layout="@layout/view_title_bar" />
 
-    <WebView
-        android:id="@+id/web"
+    <TextView
+        android:layout_marginTop="10dp"
+        android:text="TextView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:id="@+id/textView7"
+        android:background="@drawable/bg_shop_line"/>
+
+
 </LinearLayout>
