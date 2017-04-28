@@ -181,6 +181,14 @@ public class CodeActivity extends Activity {
                             result = AuthUtil.getUserInfo(wxsid, skey, wxuin, passTicket);
                         }
                         break;
+                    case 7://获取个人信息
+                        ////模拟发送消息 result = AuthUtil.sendMessage(wxuin, wxsid, skey, "内容测试", "fromA", "fromB", passTicket);
+//                        if (isWxNew) {
+//                            result = AuthUtil.getQunZu2(passTicket);
+//                        } else {//v2
+//                            result = AuthUtil.getQunZu(passTicket);
+//                        }
+                        break;
                     default:
                         break;
                 }
@@ -257,8 +265,26 @@ public class CodeActivity extends Activity {
                                 Common.NickName = userinfo.getUser().getNickName() == null ? "" : userinfo.getUser().getNickName();
                                 Common.Name = userinfo.getUser().getUserName();
                                 Common.isWxNew = isWxNew;//判断接口状态
+//                                step+=1;
+//                                getQunZu();
                             }
                             handler.sendEmptyMessage(FINISH);
+                            break;
+                        case 7:
+//                            handler.sendEmptyMessage(FINISH);
+
+//                            userinfo = new Gson().fromJson(result, UserInfo.class);
+//                            groupBeans = (List<LinkedTreeMap>) userinfo.getContactList();
+//                            if (userinfo != null && userinfo.getUser() != null) {
+//                                Log.e("tag", userinfo.getUser().getNickName() + "名称:" + userinfo.getUser().getUserName());
+//                                Common.NickName = userinfo.getUser().getNickName() == null ? "" : userinfo.getUser().getNickName();
+//                                Common.Name = userinfo.getUser().getUserName();
+//                                Common.isWxNew = isWxNew;//判断接口状态
+//
+//                                step+=1;
+//                                handler.sendEmptyMessage(FINISH);
+//                                getQunZu();
+//                            }
                             break;
                         default:
                             break;
@@ -331,42 +357,44 @@ public class CodeActivity extends Activity {
             } else {
                 Toast.makeText(this, "您暂时还没群组", Toast.LENGTH_SHORT).show();
             }
-        } else if (type == 0) {//全部
-            if (groupBeans != null) {
-                List<String> groups = new ArrayList<>();
-                for (int i = 0; i < groupBeans.size(); i++) {
-                    LinkedTreeMap map = groupBeans.get(i);
-                    if (map.containsKey("ContactFlag")) {
-                        if (map.containsKey("VerifyFlag")) {
-                            double contactFlag = (double) map.get("ContactFlag");
-                            double verifyFlag = (double) map.get("VerifyFlag");
-                            if (contactFlag == 3.0 && verifyFlag == 0.0) {
-                                groups.add((String) map.get("UserName"));
-                            }
-                        }
-                    }
-                    if (map.containsKey("MemberCount")) {
-                        double c = (double) map.get("MemberCount");
-                        if (c > 0.0) {
-                            groups.add((String) map.get("UserName"));
-                        }
-                    }
-                }
-                count = groups.size();//群组个数
-                Common.groupBeanList = groups;//赋给全局变量
-            } else {
-                Toast.makeText(this, "获取成员列表信息失败", Toast.LENGTH_SHORT).show();
-            }
-        } else {
+        }
+//        else if (type == 0) {//全部
+//            if (groupBeans != null) {
+//                List<String> groups = new ArrayList<>();
+//                for (int i = 0; i < groupBeans.size(); i++) {
+//                    LinkedTreeMap map = groupBeans.get(i);
+//                    if (map.containsKey("ContactFlag")) {
+//                        if (map.containsKey("VerifyFlag")) {
+//                            double contactFlag = (double) map.get("ContactFlag");
+//                            double verifyFlag = (double) map.get("VerifyFlag");
+//                            if (contactFlag == 3.0 && verifyFlag == 0.0) {
+//                                groups.add((String) map.get("UserName"));
+//                            }
+//                        }
+//                    }
+//                    if (map.containsKey("MemberCount")) {
+//                        double c = (double) map.get("MemberCount");
+//                        if (c > 0.0) {
+//                            groups.add((String) map.get("UserName"));
+//                        }
+//                    }
+//                }
+//                count = groups.size();//群组个数
+//                Common.groupBeanList = groups;//赋给全局变量
+//            } else {
+//                Toast.makeText(this, "获取成员列表信息失败", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+        else {
             if (userBean != null && userBean.getMemberList() != null) {
                 List<UserBean.MemberListBean> list = userBean.getMemberList();
                 int size = list.size();
                 for (int i = 0; i < size; i++) {
                     UserBean.MemberListBean bean = list.get(i);
-//                    if (type == 0 && bean.getVerifyFlag() == 0 && bean.getContactFlag() == 3) {//全部
-//                        count += 1;
-//                    } else
-                    if (type == 1 && bean.getSex() == 1 && !"".equals(bean.getAlias())) {//男
+                    if (type == 0 && bean.getVerifyFlag() == 0 && bean.getContactFlag() == 3) {//全部  好友
+//                    if (type == 0 && bean.getVerifyFlag() == 0) {//全部
+                        count += 1;
+                    } else if (type == 1 && bean.getSex() == 1 && !"".equals(bean.getAlias())) {//男
                         count += 1;
                     } else if (type == 2 && bean.getSex() == 2) {//女
                         count += 1;
@@ -477,6 +505,15 @@ public class CodeActivity extends Activity {
      * 发送消息
      */
     private void getUserInfo() {
+        if (Utils.isOpenNetwork(CodeActivity.this)) {
+            queue.add(new RequestTask("").execute());
+        }
+    }
+
+    /*
+    * 发送消息
+    */
+    private void getQunZu() {
         if (Utils.isOpenNetwork(CodeActivity.this)) {
             queue.add(new RequestTask("").execute());
         }

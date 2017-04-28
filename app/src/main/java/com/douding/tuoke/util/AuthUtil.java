@@ -290,6 +290,29 @@ public class AuthUtil {
 		return result;
 }
 
+    private static String doPost(String url) {//qunzu
+        DefaultHttpClient client = new DefaultHttpClient();
+        if(cookieStore!=null){
+            client.setCookieStore(cookieStore);
+        }
+        HttpPost post = new HttpPost(url);
+        String result = null;
+        try {
+            post.setHeader("Content_Type","application/json;charset=UTF-8");
+            HttpResponse res = client.execute(post);
+            System.out.println(res.getStatusLine().getStatusCode());
+            // 如果状态码为200，接收正常
+            if (res.getStatusLine().getStatusCode() == 200) {
+                // 取出回应字串
+                result=EntityUtils.toString(res.getEntity(), "utf-8");
+                Log.e("Post response Body:",result);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
+
 	/**
 	 * 获取个人信息
 	 * @param sid
@@ -335,6 +358,22 @@ public class AuthUtil {
 		String result=doPost2(url,new Gson().toJson(info));
 		return result;
 	};
+    //获取群组 信息
+	public static String getQunZu(String passTicket){//获取群组 信息
+        //https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxbatchgetcontact?type=ex&r=1453686440414&lang=zh_CN&pass_ticket=a4M6SjxBvR8c9I66LB3b1MHSKujJAMueHMdhJgTxoStJK4akNvbJ5eGdRFkHxDNc
+        String result="";
+        long time=System.currentTimeMillis();
+        String url="https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxbatchgetcontact?type=ex&r="+time+"&lang=zh_CN&pass_ticket="+passTicket;
+        return doPost(url);
+    }
+    //获取群组 信息
+    public static String getQunZu2(String passTicket){
+        //https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxbatchgetcontact?type=ex&r=1453686440414&lang=zh_CN&pass_ticket=a4M6SjxBvR8c9I66LB3b1MHSKujJAMueHMdhJgTxoStJK4akNvbJ5eGdRFkHxDNc
+        String result="";
+        long time=System.currentTimeMillis();
+        String url="https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxbatchgetcontact?type=ex&r="+time+"&lang=zh_CN&pass_ticket="+passTicket;
+        return doPost(url);
+    }
 }
 
 //	public static String doPost(String requestPayload, String actionUrl, Map<String, String> params) {

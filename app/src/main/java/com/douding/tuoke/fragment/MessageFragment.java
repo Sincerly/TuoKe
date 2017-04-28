@@ -70,7 +70,7 @@ public class MessageFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (Common.needSend) {
-            isWxNew=Common.isWxNew;
+            isWxNew = Common.isWxNew;
             Common.needSend = false;
             startSendTask();//开始发送信息
         }
@@ -78,52 +78,74 @@ public class MessageFragment extends Fragment {
 
     private void startSendTask() {
         bean = Common.userBean;
-        int type = Common.type;
+        final int type = Common.type;
         if (type == 3) {//群组
-            List<String> groupBean = Common.groupBeanList;
+            final List<String> groupBean = Common.groupBeanList;
             if (groupBean != null) {
                 if (Utils.isOpenNetwork(getActivity())) {
-                    for (int i = 0; i < groupBean.size(); i++) {
-                        String name = groupBean.get(i);
-                        new SendMessageTask(name, Common.Content).execute();//发送群消息
-                    }
-                }
-            }
-        }else if(type==0){//全部
-            List<String> groupBean = Common.groupBeanList;
-            if (groupBean != null) {
-                if (Utils.isOpenNetwork(getActivity())) {
-                    for (int i = 0; i < groupBean.size(); i++) {
-                        String name = groupBean.get(i);
-                        new SendMessageTask(name, Common.Content).execute();//发送全部
-                    }
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                for (int i = 0; i < groupBean.size(); i++) {
+                                    String name = groupBean.get(i);
+                                    Thread.sleep(900);
+                                    new SendMessageTask(name, Common.Content).execute();//发送群消息
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+
                 }
             }
         }
+//        else if(type==0){//全部
+//            List<String> groupBean = Common.groupBeanList;
+//            if (groupBean != null) {
+//                if (Utils.isOpenNetwork(getActivity())) {
+//                    for (int i = 0; i < groupBean.size(); i++) {
+//                        String name = groupBean.get(i);
+//                        new SendMessageTask(name, Common.Content).execute();//发送全部
+//                    }
+//                }
+//            }
+//        }
         else {//好友
             if (bean != null) {
                 if (Utils.isOpenNetwork(getActivity())) {
-                    for (int i = 0; i < bean.getMemberCount(); i++) {
-                        UserBean.MemberListBean item = bean.getMemberList().get(i);
-//                        if (type == 0) {//0全部 1男 2女 3群组 4男女
-//                            if (item.getVerifyFlag() == 0 && item.getContactFlag() == 3) {//
-//                                new SendMessageTask(item.getUserName(), Common.Content).execute();
-//                            }
-//                        } else
-                        if (type == 1) {//男
-                            if (item.getSex() == 1) {
-                                new SendMessageTask(item.getUserName(), Common.Content).execute();
-                            }
-                        } else if (type == 2) {//女
-                            if (item.getSex() == 2) {
-                                new SendMessageTask(item.getUserName(), Common.Content).execute();
-                            }
-                        } else if (type == 4) {//男女
-                            if (item.getSex() == 2 || item.getSex() == 1) {
-                                new SendMessageTask(item.getUserName(), Common.Content).execute();
+                    final int t=type;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                for (int i = 0; i < bean.getMemberCount(); i++) {
+                                    UserBean.MemberListBean item = bean.getMemberList().get(i);
+                                    if (t == 0) {//0全部 1男 2女 3群组 4男女
+                                        if (item.getVerifyFlag() == 0 && item.getContactFlag() == 3) {//
+                                            new SendMessageTask(item.getUserName(), Common.Content).execute();
+                                        }
+                                    } else if (t == 1) {//男
+                                        if (item.getSex() == 1) {
+                                            new SendMessageTask(item.getUserName(), Common.Content).execute();
+                                        }
+                                    } else if (t == 2) {//女
+                                        if (item.getSex() == 2) {
+                                            new SendMessageTask(item.getUserName(), Common.Content).execute();
+                                        }
+                                    } else if (t == 4) {//男女
+                                        if (item.getSex() == 2 || item.getSex() == 1) {
+                                            new SendMessageTask(item.getUserName(), Common.Content).execute();
+                                        }
+                                    }
+                                    Thread.sleep(900);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
-                    }
+                    }).start();
                 }
             } else {
                 Toast.makeText(getActivity(), "初始化成员失败！", Toast.LENGTH_SHORT).show();
@@ -132,7 +154,7 @@ public class MessageFragment extends Fragment {
     }
 
     private String wxuin, wxsid, skey, passTicket;
-    private boolean isWxNew=false;
+    private boolean isWxNew = false;
 
     private int needSendCount = 0;
 
@@ -155,9 +177,9 @@ public class MessageFragment extends Fragment {
         @Override
         protected Object doInBackground(Object[] objects) {
             try {
-                if(isWxNew){
+                if (isWxNew) {
                     result = AuthUtil.sendMessage2(wxuin, wxsid, skey, msg, "fromA", toUserName, passTicket);
-                }else{//v2
+                } else {//v2
                     result = AuthUtil.sendMessage(wxuin, wxsid, skey, msg, "fromA", toUserName, passTicket);
                 }
             } catch (Exception e) {
