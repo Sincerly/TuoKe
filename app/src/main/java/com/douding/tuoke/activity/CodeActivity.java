@@ -245,7 +245,7 @@ public class CodeActivity extends Activity {
                                 }
                             }
                             break;
-                        case 5:
+                        case 5://getCount
                             userBean = new Gson().fromJson(result, UserBean.class);
                             if (userBean != null) {
                                 Log.e("tag", "成员数量:" + userBean.getMemberList().size());
@@ -256,7 +256,7 @@ public class CodeActivity extends Activity {
                                 Log.e("tag", "UserBean 为空");
                             }
                             break;
-                        case 6:
+                        case 6://wxinit
                             Log.e("tag", "*************************Step6");
                             userinfo = new Gson().fromJson(result, UserInfo.class);
                             groupBeans = (List<LinkedTreeMap>) userinfo.getContactList();
@@ -341,9 +341,9 @@ public class CodeActivity extends Activity {
         int type = Common.type;
 
         if (type == 3) {//群组
-            if (groupBeans != null) {
-                List<String> groups = new ArrayList<>();
-                for (int i = 0; i < groupBeans.size(); i++) {
+            List<String> groups = new ArrayList<>();
+            if (groupBeans != null) {//回话列表
+                for (int i = 0; i < groupBeans.size(); i++) {//获取回话列表里边的
                     LinkedTreeMap map = groupBeans.get(i);
                     if (map.containsKey("MemberCount")) {
                         double c = (double) map.get("MemberCount");
@@ -352,49 +352,67 @@ public class CodeActivity extends Activity {
                         }
                     }
                 }
-                count = groups.size();//群组个数
-                Common.groupBeanList = groups;//赋给全局变量
-            } else {
-                Toast.makeText(this, "您暂时还没群组", Toast.LENGTH_SHORT).show();
             }
-        }
-//        else if (type == 0) {//全部
-//            if (groupBeans != null) {
-//                List<String> groups = new ArrayList<>();
-//                for (int i = 0; i < groupBeans.size(); i++) {
-//                    LinkedTreeMap map = groupBeans.get(i);
-//                    if (map.containsKey("ContactFlag")) {
-//                        if (map.containsKey("VerifyFlag")) {
-//                            double contactFlag = (double) map.get("ContactFlag");
-//                            double verifyFlag = (double) map.get("VerifyFlag");
-//                            if (contactFlag == 3.0 && verifyFlag == 0.0) {
-//                                groups.add((String) map.get("UserName"));
-//                            }
-//                        }
-//                    }
-//                    if (map.containsKey("MemberCount")) {
-//                        double c = (double) map.get("MemberCount");
-//                        if (c > 0.0) {
-//                            groups.add((String) map.get("UserName"));
-//                        }
-//                    }
-//                }
-//                count = groups.size();//群组个数
-//                Common.groupBeanList = groups;//赋给全局变量
+            if (userBean != null) {//用户个人信息  取出保存到通讯录的
+                List<UserBean.MemberListBean> list = userBean.getMemberList();
+                int size = list.size();
+                for (int i = 0; i < size; i++) {
+                    UserBean.MemberListBean bean = list.get(i);
+                    String userName = bean.getUserName();
+                    if (userName != null && userName.startsWith("@@")) {
+                        if (!groups.contains(userName)) {//数组里边不包含 然后就添加到数组集合里边
+                            groups.add(userName);
+                        }
+                    }
+                }
+            }
+            count = groups.size();//群组个数
+            Common.groupBeanList = groups;//赋给全局变量
 //            } else {
-//                Toast.makeText(this, "获取成员列表信息失败", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "您暂时还没群组", Toast.LENGTH_SHORT).show();
 //            }
-//        }
-        else {
+        } else if (type == 0) {//全部
+            List<String> groups = new ArrayList<>();
+            int groupCount = 0;
             if (userBean != null && userBean.getMemberList() != null) {
                 List<UserBean.MemberListBean> list = userBean.getMemberList();
                 int size = list.size();
                 for (int i = 0; i < size; i++) {
                     UserBean.MemberListBean bean = list.get(i);
-                    if (type == 0 && bean.getVerifyFlag() == 0 && bean.getContactFlag() == 3) {//全部  好友
-//                    if (type == 0 && bean.getVerifyFlag() == 0) {//全部
-                        count += 1;
-                    } else if (type == 1 && bean.getSex() == 1 && !"".equals(bean.getAlias())) {//男
+                    if (bean.getVerifyFlag() == 0&&bean.getContactFlag()!=1) {
+                        groups.add(bean.getUserName());
+                        count++;
+                    }
+                }
+
+                if (groupBeans != null) {//会话列表
+                    for (int i = 0; i < groupBeans.size(); i++) {//获取会话列表里边的数组
+                        LinkedTreeMap map = groupBeans.get(i);
+                        if (map.containsKey("MemberCount")) {
+                            double c = (double) map.get("MemberCount");
+                            if (c > 0.0) {
+                                if (map.get("UserName") != null && !groups.contains(map.get("UserName"))) {
+                                    groups.add((String) map.get("UserName"));
+                                    count++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //count += groupCount;//成员加群组个数
+            Common.groupBeanList = groups;//赋给全局变量
+        } else {
+            if (userBean != null && userBean.getMemberList() != null) {
+                List<UserBean.MemberListBean> list = userBean.getMemberList();
+                int size = list.size();
+                for (int i = 0; i < size; i++) {
+                    UserBean.MemberListBean bean = list.get(i);
+//                    if (type == 0 && bean.getVerifyFlag() == 0 && bean.getContactFlag() == 3) {//全部  好友
+                    //if (type == 0 && bean.getVerifyFlag() == 0) {//全部
+                    // count += 1;
+                    //} else
+                    if (type == 1 && bean.getSex() == 1 && !"".equals(bean.getAlias())) {//男
                         count += 1;
                     } else if (type == 2 && bean.getSex() == 2) {//女
                         count += 1;
@@ -502,7 +520,7 @@ public class CodeActivity extends Activity {
     }
 
     /*
-     * 发送消息
+     *获取用户消息
      */
     private void getUserInfo() {
         if (Utils.isOpenNetwork(CodeActivity.this)) {

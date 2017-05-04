@@ -100,33 +100,43 @@ public class MessageFragment extends Fragment {
 
                 }
             }
-        }
-//        else if(type==0){//全部
-//            List<String> groupBean = Common.groupBeanList;
-//            if (groupBean != null) {
-//                if (Utils.isOpenNetwork(getActivity())) {
-//                    for (int i = 0; i < groupBean.size(); i++) {
-//                        String name = groupBean.get(i);
-//                        new SendMessageTask(name, Common.Content).execute();//发送全部
-//                    }
-//                }
-//            }
-//        }
-        else {//好友
+        } else if (type == 0) {//全部  成员加群组
+            final List<String> groupBean = Common.groupBeanList;
+            if (groupBean != null) {
+                if (Utils.isOpenNetwork(getActivity())) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                for (int i = 0; i < groupBean.size(); i++) {
+                                    String name = groupBean.get(i);
+                                    Thread.sleep(900);
+                                    new SendMessageTask(name, Common.Content).execute();//发送消息
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                }
+            }
+        } else {//好友
             if (bean != null) {
                 if (Utils.isOpenNetwork(getActivity())) {
-                    final int t=type;
+                    final int t = type;
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
                             try {
                                 for (int i = 0; i < bean.getMemberCount(); i++) {
                                     UserBean.MemberListBean item = bean.getMemberList().get(i);
-                                    if (t == 0) {//0全部 1男 2女 3群组 4男女
-                                        if (item.getVerifyFlag() == 0 && item.getContactFlag() == 3) {//
-                                            new SendMessageTask(item.getUserName(), Common.Content).execute();
-                                        }
-                                    } else if (t == 1) {//男
+                                    //if (t == 0) {//0全部 1男 2女 3群组 4男女
+//                                        if (item.getVerifyFlag() == 0 && item.getContactFlag() == 3) {//
+                                    //if (item.getVerifyFlag() == 0) {//
+                                    //new SendMessageTask(item.getUserName(), Common.Content).execute();
+                                    //}
+                                    //} else
+                                    if (t == 1) {//男
                                         if (item.getSex() == 1) {
                                             new SendMessageTask(item.getUserName(), Common.Content).execute();
                                         }
