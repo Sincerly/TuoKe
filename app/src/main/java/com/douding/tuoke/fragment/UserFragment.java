@@ -1,5 +1,6 @@
 package com.douding.tuoke.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.douding.tuoke.R;
+import com.douding.tuoke.activity.LoginActivity;
+import com.douding.tuoke.activity.UpdatePwdActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,6 +24,12 @@ import butterknife.Unbinder;
 
 public class UserFragment extends Fragment {
 
+    @BindView(R.id.login)
+    Button mLogin;
+    @BindView(R.id.updatePwd)
+    Button mUpdatePwd;
+    @BindView(R.id.exit)
+    Button mExit;
     private View view;
     private Unbinder unbinder;
 
@@ -37,5 +46,26 @@ public class UserFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @OnClick({R.id.login, R.id.updatePwd, R.id.exit})
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.login:
+                Intent intent=new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent);
+
+                break;
+            case R.id.updatePwd:
+                Intent intent2=new Intent(getActivity(), UpdatePwdActivity.class);
+                startActivity(intent2);
+
+                break;
+            case R.id.exit:
+                Intent intent3=new Intent(getActivity(),LoginActivity.class);
+                startActivity(intent3);
+
+                break;
+        }
     }
 }

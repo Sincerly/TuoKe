@@ -22,6 +22,7 @@ import com.douding.tuoke.common.Common;
 import com.douding.tuoke.fragment.MessageFragment;
 import com.douding.tuoke.fragment.ModeListFragment;
 import com.douding.tuoke.fragment.SettingModeFragment;
+import com.douding.tuoke.fragment.UserFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +62,8 @@ public class IndexActivity extends FragmentActivity implements View.OnClickListe
 
 	private ModeListFragment fragment;
 	private MessageFragment fragment2;
-	private SettingModeFragment fragment3;
+//	private SettingModeFragment fragment3;
+	private UserFragment fragment3;
 	private FragmentTransaction ft;
 
 	@Override
@@ -86,7 +88,7 @@ public class IndexActivity extends FragmentActivity implements View.OnClickListe
 	private void initFragment() {
 		fragmentList.add(new ModeListFragment());
 		fragmentList.add(new MessageFragment());
-		fragmentList.add(new SettingModeFragment());
+		fragmentList.add(new UserFragment());
 		//打开界面后显示此Fragment
 		ft = getSupportFragmentManager().beginTransaction();
 		if (fragment == null) {
@@ -143,7 +145,7 @@ public class IndexActivity extends FragmentActivity implements View.OnClickListe
 				break;
 			case 2:
 				if(fragment3 == null){
-					fragment3 = new SettingModeFragment();
+					fragment3 = new UserFragment();
 					ft.add(R.id.content, fragment3);
 				}else{
 //					ft.show(fragment3);

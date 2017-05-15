@@ -1043,7 +1043,7 @@ public class Utils {
 //			map.put("action", "SendCode");
 //			map.put("Mobile", params[0]);
 //			try {
-//				String json=HttpTool.postHttp("/App/User/User.aspx", map);
+//				String json=HttpTool.postHttp("/App/UserLoginEntity/UserLoginEntity.aspx", map);
 //				LogUtil.i(json);
 //				JSONObject ob=new JSONObject(json);
 //				Ret=ob.getInt("ret");

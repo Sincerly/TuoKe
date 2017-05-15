@@ -17,11 +17,7 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:supportsRtl="true">
         <activity android:name=".activity.IndexActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN">
-                </action>
-                <category android:name="android.intent.category.LAUNCHER"></category>
-            </intent-filter>
+
         </activity>
         <activity android:name=".MainActivity">
 
@@ -35,6 +31,14 @@
 
         <activity android:name=".activity.CodeActivity" android:launchMode="singleTask"></activity>
 
+        <activity android:name=".activity.LoginActivity" android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN">
+                </action>
+                <category android:name="android.intent.category.LAUNCHER"></category>
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.UpdatePwdActivity"></activity>
     </application>
 
 </manifest>

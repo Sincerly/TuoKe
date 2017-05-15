@@ -21,11 +21,16 @@ import com.douding.tuoke.R;
 import com.douding.tuoke.adapter.RBaseAdapter;
 import com.douding.tuoke.adapter.RViewHolder;
 import com.douding.tuoke.application.TKApplication;
+import com.douding.tuoke.bean.entity.UserLoginEntity;
 import com.douding.tuoke.bean.list.ImageBean;
 import com.douding.tuoke.bean.list.MessageBean;
 import com.douding.tuoke.bean.list.ModeBean;
+import com.douding.tuoke.bean.list.ResponseBean;
 import com.douding.tuoke.fragment.MessageFragment;
 import com.douding.tuoke.greendao.ModeBeanDao;
+import com.douding.tuoke.greendao.UserLoginEntityDao;
+import com.douding.tuoke.util.AuthUtil;
+import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -75,6 +80,7 @@ public class AddMessageActivity extends FragmentActivity {
         setContentView(R.layout.activity_add_message);
         ButterKnife.bind(this);
         dao = TKApplication.getApplication().getDaoSession().getModeBeanDao();
+        userEntityDao=TKApplication.getApplication().getDaoSession().getUserLoginEntityDao();
         id = getIntent().getLongExtra("id", 0);
         if (id != null && id != 0) {
             bean = dao.load(id);
@@ -161,12 +167,14 @@ public class AddMessageActivity extends FragmentActivity {
                     Intent intent = new Intent();
                     if (id != null && id != 0) {//修改
                         updateData();
+                        intent.setAction("com.sincerly.needload");
+                        sendBroadcast(intent);
+                        finish();
                     } else {//新增
-                        insertData();
+//                        insertData();
+                        sendTask();
                     }
-                    intent.setAction("com.sincerly.needload");
-                    sendBroadcast(intent);
-                    finish();
+
                     //setResult(RESULT_OK);
                 }
                 break;
@@ -273,6 +281,11 @@ public class AddMessageActivity extends FragmentActivity {
         bean.setTime(format.format(new Date()));
         dao.insert(bean);
         save.setEnabled(true);
+
+        Intent intent=new Intent();
+        intent.setAction("com.sincerly.needload");
+        sendBroadcast(intent);
+        finish();
     }
 
     //改
@@ -283,5 +296,57 @@ public class AddMessageActivity extends FragmentActivity {
         save.setEnabled(true);
     }
 
+    private void sendTask(){
+        List<UserLoginEntity> list=new ArrayList<>();
+        list.addAll(userEntityDao.queryBuilder().orderDesc(UserLoginEntityDao.Properties.Id).list());
+        String id="";
+        if(list!=null&&list.size()>0){
+            UserLoginEntity u=list.get(0);
+            id=u.getUserId();
+        }
+        if(!"".equals(id)){
+            String url="http://www.webchat.guangzhiyi58.com/app/app.ashx?fangshi=fabu&user_ID="+8+"&title="+msgTitle.getText().toString()+"&content="+objectContent.getText().toString()+"&mID=1";
+            new AddModeTask().execute(url);
+        }else{
+            Toast.makeText(AddMessageActivity.this,"存储数据被破坏,请重新登录!",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    class AddModeTask extends AsyncTask<String,String,String> {
+        private String result;
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                result = AuthUtil.doGet(params[0]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            ResponseBean bean=new Gson().fromJson(result,ResponseBean.class);
+            if(bean!=null&&"0".equals(bean.getResult())){
+                insertData();//添加模板至本地
+            }else{
+                if(bean!=null){
+                    Toast.makeText(AddMessageActivity.this,bean.getDescribing(), Toast.LENGTH_SHORT).show();
+
+                }else{
+                    Toast.makeText(AddMessageActivity.this,"添加失败，请重试！", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
     ModeBean updateData;
+    private UserLoginEntityDao userEntityDao;
 }

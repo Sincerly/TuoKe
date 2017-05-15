@@ -1,6 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@drawable/icon_tuoke_bg"
+    android:fitsSystemWindows="true"
     android:layout_height="match_parent">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="176dp">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            app:srcCompat="@mipmap/ic_launcher"
+            android:id="@+id/image"
+            android:tint="#42518B"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="center|bottom" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginLeft="16dp"
+            android:layout_gravity="center_vertical"
+            app:srcCompat="@drawable/icon_user_name"
+         />
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:background="#80FFFFFF"
+            android:textColorHint="#4a518B"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_height="56dp">
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/name"
+                android:hint="Username"
+                android:textStyle=""/>
+        </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_margin="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="56dp">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="16dp"
+            app:srcCompat="@drawable/icon_user_pwd"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:background="#80FFFFFF"
+            android:textColorHint="#4a518B"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_height="match_parent">
+
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:text=""
+                android:textStyle="bold"
+                android:id="@+id/pwd" />
+        </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
+
+    <Button
+        android:text="登录"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="32dp"
+        android:textStyle="bold"
+        android:background="@drawable/bg_login_selector"
+        android:id="@+id/login" />
+
+    <Button
+        android:text="忘记密码"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="16dp"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_login_selector"
+        android:id="@+id/forgetPwd"
+        android:visibility="gone" />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_height="wrap_content">
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

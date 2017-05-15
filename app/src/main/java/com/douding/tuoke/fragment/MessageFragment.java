@@ -62,7 +62,9 @@ public class MessageFragment extends Fragment {
 
     private void reload() {
         list.clear();
-        list.addAll(dao.queryBuilder().orderDesc(MessageBeanDao.Properties.Id).list());
+        list.addAll(dao.queryBuilder()
+                .orderDesc(MessageBeanDao.Properties.Id)
+                .list());
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 

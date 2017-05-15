@@ -23,7 +23,7 @@ public class UserInfo {
 	 * Count : 0
 	 * ContactList : []
 	 * SyncKey : {"Count":0,"List":[]}
-	 * User : {"Uin":0,"UserName":"","NickName":"","HeadImgUrl":"","RemarkName":"","PYInitial":"","PYQuanPin":"","RemarkPYInitial":"","RemarkPYQuanPin":"","HideInputBarFlag":0,"StarFriend":0,"Sex":0,"Signature":"","AppAccountFlag":0,"VerifyFlag":0,"ContactFlag":0,"WebWxPluginSwitch":0,"HeadImgFlag":0,"SnsFlag":0}
+	 * UserLoginEntity : {"Uin":0,"UserName":"","NickName":"","HeadImgUrl":"","RemarkName":"","PYInitial":"","PYQuanPin":"","RemarkPYInitial":"","RemarkPYQuanPin":"","HideInputBarFlag":0,"StarFriend":0,"Sex":0,"Signature":"","AppAccountFlag":0,"VerifyFlag":0,"ContactFlag":0,"WebWxPluginSwitch":0,"HeadImgFlag":0,"SnsFlag":0}
 	 * ChatSet :
 	 * SKey :
 	 * ClientVersion : 0

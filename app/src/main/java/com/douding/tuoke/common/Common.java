@@ -17,10 +17,16 @@ public class Common {
 
 	public static Long id;
 	public static String Content="";
+	public static String USER_ID="";
 	public static int type=0;//0全部 1男 2女 3群组 4男女
 	public static boolean needSend=false;
 	public static UserBean userBean;
 	public static UserBean userInfo;//包含群组
 	public static List<String> groupBeanList;//群组Name  @1231456456464
 	public static boolean isWxNew=false;
+
+
+	public static class NET{
+		public static final String URL="http://www.webchat.guangzhiyi58.com/app/app.ashx?";
+	}
 }
